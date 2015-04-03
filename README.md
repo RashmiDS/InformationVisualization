@@ -5,7 +5,7 @@ MSAN 622 Information Visualization
 |  **Name:** | Rashmi Laddha          |
 |-----------:|:-----------------------|
 | **Email:** | <rdladdha@dons.usfca.edu> |
-|   **Web:** | <http://msan622.github.io/spring-2015-msan622> |
+|   **Web:** | <https://github.com/RashmiDS/InformationVisualization> |
 
 ## About Me ##
 
