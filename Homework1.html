@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MSAN 622 Information Visualization</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+<style>
+
+/*body {
+  font: 15px sans-serif;
+}*/
+
+body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover{
+  fill: green ;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+.grid .tick {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.grid path {
+          stroke-width: 0;
+}
+
+
+label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+</style>
+</head>
+
+
+<body> 
+<label><input type="checkbox"> Sort values</label>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MSN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#homework">Homework</a></li>
+            </ul>
+
+            <!-- <ul class="nav navbar-nav navbar-right"> -->
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h2 style="text-align: center">Homwork 1: Letter Count and Bar Chart</h2>
+    </div>
+</div>  
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+
+// The new data variable.
+
+var orig_str = window.location.search.substring(1);
+var compact_str = orig_str.replace(/%20/g,'').toLowerCase();
+var query = compact_str.replace(/[^\w\s]|_/g, "")
+                   .replace(/\s+/g, " ");
+
+var data = [];
+
+function characterCount(word, character) {
+   var count = 0;
+    for (var i = 0; i < word.length; i++) {
+       if (word[i] === character) {
+           count++;
+       }
+  }
+  return count;
+}
+
+temp = []
+for (var i = 0, l = query.length; i < l; i++) {
+    var currentChar = query[i];
+    var v = characterCount(query, currentChar);
+    if (temp.indexOf(currentChar) == -1){
+        temp.push(currentChar)
+        data.push({"letter":currentChar, "count":v});
+      }
+}
+
+// # finding the maximun value of count to give to the number of ticks
+var maximumValue = d3.max(data, function(d) { return d.count;})
+console.log(maximumValue)
+console.log(data)
+
+var margin = {top: 40, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// var formatPercent = d3.format(".0%");
+
+var x = d3.scale.ordinal()
+    .domain(data.sort(function(a,b){ return d3.ascending(a.letter,b.letter)}))
+    .rangeRoundBands([0, width], .1);
+    
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+    // .ticks(5);
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format(',.f'))
+    .ticks(maximumValue);
+
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>Count:</strong> <span style='color:white'>" + d.count + "</span>";
+  })
+
+svg.call(tip);
+
+// function make_x_axis() {
+//     return d3.svg.axis()
+//         .scale(x)
+//         .orient("bottom")
+//         .ticks(5)
+// }
+
+function make_y_axis() {
+  return d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .ticks(maximumValue)
+}
+
+// The following code was contained in the callback function.
+x.domain(data.map(function(d) { return d.letter; }));
+y.domain([0, d3.max(data, function(d) { return d.count; })]);
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+  .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x",0-(height/2.0))
+    .attr("y", 0-margin.left)
+    .attr("dy", ".71em")
+    .style("text-anchor", "middle")
+    .text("Count");
+
+  // svg.append("g")
+  //       .attr("class", "grid")
+  //       .attr("transform", "translate(0," + height + ")")
+  //       .call(make_x_axis()
+  //           .tickSize(-height, 0, 0)
+  //           .tickFormat("")
+  //       )
+
+  svg.append("g")            
+        .attr("class", "grid")
+        .call(make_y_axis()
+            .tickSize(-width, 0, 0)
+            .tickFormat("")
+        )
+
+
+var vowels = ['a','e','i','o','u']
+
+svg.selectAll(".bar")
+    .data(data)
+  .enter().append("rect")
+    .attr("class", "bar")
+    .attr("x", function(d) { return x(d.letter) })
+    .attr("width", x.rangeBand())
+    .attr("y", height)
+    .attr("height",0)
+    .style("fill", function(d){
+      if (vowels.indexOf(d.letter) == -1){return "grey"}
+      else {return "skyblue"}
+  })
+    .transition()
+        .delay(function (d, i) { return i*300;})
+        .attr("height", function (d, i) { return height - y(d.count); })
+        .attr("y", function (d) { return y(d.count)})
+    
+    
+svg.selectAll(".bar")
+  .on('mouseover', tip.show)
+  .on('mouseout', tip.hide);
+
+
+
+d3.select("input").on("change", change);
+
+  var sortTimeout = function() {
+    d3.select("input").property("checked", true).each(change);
+  };
+
+  function change() {
+    clearTimeout(sortTimeout);
+
+    // Copy-on-write since tweens are evaluated after a delay.
+    var x0 = x.domain(data.sort(this.checked
+        ? function(a, b) { return b.count - a.count; }
+        : function(a, b) { return d3.ascending(a.letter, b.letter); })
+        .map(function(d) { return d.letter; }))
+        .copy();
+
+    svg.selectAll(".bar")
+        .sort(function(a, b) { return x0(a.letter) - x0(b.letter); });
+
+    var transition = svg.transition().duration(750),
+        delay = function(d, i) { return i * 50; };
+
+    transition.selectAll(".bar")
+        .delay(delay)
+        .attr("x", function(d) { return x0(d.letter); });
+
+    transition.select(".x.axis")
+        .call(xAxis)
+      .selectAll("g")
+        .delay(delay);
+  }
+
+function contains(a, obj) {
+    console.log(data)
+    var i = a.length;
+    while (i--) {
+       if (a[i] === obj) {
+           return "a";
+       }
+    }
+    return "b";
+}
+
+</script>
+<p>ashbdajb<p>
+</body>
