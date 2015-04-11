@@ -15,14 +15,9 @@
 
 <style>
 
-/*body {
-  font: 15px sans-serif;
-}*/
-
 body {
-        padding-top: 50px;
-        padding-bottom: 20px;
-    }
+  font: 14px sans-serif;
+}
 
 .axis path,
 .axis line {
@@ -68,7 +63,7 @@ body {
 /* Style northward tooltips differently */
 .d3-tip.n:after {
   margin: -1px 0 0 0;
-  top: 100%;
+  top: 200%;
   left: 0;
 }
 
@@ -84,7 +79,7 @@ body {
 
 label {
   position: absolute;
-  top: 10px;
+  top: 200px;
   right: 10px;
 }
 </style>
@@ -108,10 +103,14 @@ label {
 
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="#homework">Homework</a></li>
+                <li><a href="/InformationVisualization/#homework">Home</a></li>
+                <li><a href="/InformationVisualization/#project">Project</a></li>
+                <!-- <li><a href="/InformationVisualization/#participation">Participation</a></li> -->
             </ul>
 
-            <!-- <ul class="nav navbar-nav navbar-right"> -->
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/InformationVisualization/#about">About</a></li>
+                <li><a href="/InformationVisualization/#contact">Contact</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -119,7 +118,7 @@ label {
 
 <div class="jumbotron">
     <div class="container">
-        <h2 style="text-align: center">Homwork 1: Letter Count and Bar Chart</h2>
+        <h2 style="text-align: center">Homework 1: Letter Count and Bar Chart</h2>
     </div>
 </div>  
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -183,7 +182,6 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .tickFormat(d3.format(',.f'))
     .ticks(maximumValue);
-
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -321,5 +319,34 @@ function contains(a, obj) {
 }
 
 </script>
-<p>ashbdajb<p>
+
+<div>
+<ul style="list-style-type:none">
+<li "style-type: none"><a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/Homework1.html">Code</a></li>
+</ul>
+</div>
+<div class="container">
+<h3>Implementation Details</h3>
+
+  <p style ="font-size:16px"> C level</p>
+  <ul>
+    <li> Modified the tick label formatting: changed ticks to show integers. </li>
+    <li> Modified the underlying grid and axis lines: added grid lines on x-axis. </li>
+    <li> Color coded the bars based on vowels or consonants. </li>
+    <li> Sorted by alphabetical sequence. </li>
+  </ul>
+  <p style ="font-size:16px"> B level</p>
+  <ul>
+    <li> Added a checkbox that to toggle between sorting alphabetically and sorting by value. </li>
+    <li> Added a tooltip that shows the exact value of a bar when hovering over it. </li>
+  </ul>
+  <p style ="font-size:16px"> A level</p>
+  <ul>
+    <li> Starting the visualisation by smoothly growing alphabetically sorted bars. </li>
+  </ul>
+
+<h1>Discussion</h1>
+
+  <p> This being my first JavaScript-d3 project, I decided to focus on understanding how things work rather than just trying to make things pretty. I changed the direction of ticks on the axis because they were getting overlapped. Also, the label of Y-axis was on top and on right of axis. This was causing the label to hide after sorting. I changed the ticks formatting and also label location to improve those errors. Initial chart shows the sorted by letter bars. This is easy to understand if one is trying to understand the frequency of letter in a given text. Tool tips when you hover is to give the exact value of Count of that letter. This helps when there are large number of bars on the plot.</p>
+</div>
 </body>
