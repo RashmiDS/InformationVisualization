@@ -1,70 +1,71 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>MSAN 622 Information Visualization</title>
+  <title>MSAN 622 Information Visualization</title>
 
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-theme.min.css" rel="stylesheet">
 
-<style>
+  <style>
 
-.plot2 {
-  font: 10px sans-serif;
-  padding: 10px;
-}
+    svg {
+      font: 10px sans-serif;
+      padding: 10px;
+    }
 
-.xaxis2,
-.frame2 {
-  shape-rendering: crispEdges;
-}
+    .xaxis2,
+    .frame2 {
+      shape-rendering: crispEdges;
+    }
 
-.xaxis2 line {
-  stroke: #ddd;
-}
-.xaxis2 path {
-  display: none;
-}
+    .xaxis2 line {
+      stroke: #ddd;
+    }
 
-.yaxis2,
-.frame2 {
-  shape-rendering: crispEdges;
-}
+    .xaxis2 path {
+      display: none;
+    }
 
-.yaxis2 line {
-  stroke: #ddd;
-}
-.yaxis2 path {
-  display: none;
-}
 
-.frame2 {
-  fill: none;
-  stroke: #aaa;
-}
 
-circle {
-  fill-opacity: .7;
-}
+ .yaxis2,
+    .frame2 {
+      shape-rendering: crispEdges;
+    }
 
-circle.hidden {
-  fill: #ccc !important;
-}
+    .yaxis2 line {
+      stroke: #ddd;
+    }
 
-.extent {
-  fill: #000;
-  fill-opacity: .125;
-  stroke: #fff;
-}
+    .yaxis2 path {
+      display: none;
+    }
 
+
+    .frame2 {
+      fill: none;
+      stroke: #aaa;
+    }
+
+    svg#plot2 circle {
+      fill-opacity: .7;
+    }
+
+    svg#plot2 circle.hidden {
+      fill: #ccc !important;
+    }
+
+    .extent {
+      fill: #000;
+      fill-opacity: .125;
+      stroke: #fff;
+    }
 </style>
 </head>
-
-
 <body> 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -98,160 +99,156 @@ circle.hidden {
         <h2 style="text-align: center">Scatter Plot Matrix</h2>
     </div>
 </div>  
+
+<div class="container" id="bubble"</div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
 
-var width = 960,
-    size = 150,
-    padding = 19.5;
 
-// var margin = {top: 20, right: 20, bottom: 30, left: 40},
-//     size = 960 - margin.left - margin.right,
-//     height = 500 - margin.top - margin.bottom;
+    var width = 1560,
+        size = 150,
+        padding = 19.5;
 
-var x = d3.scale.linear()
-    .range([padding / 2, size - padding / 2]);
+    var x = d3.scale.linear()
+        .range([padding / 2, size - padding / 2]);
 
-var y = d3.scale.linear()
-    .range([size - padding / 2, padding / 2]);
+    var y = d3.scale.linear()
+        .range([size - padding / 2, padding / 2]);
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .ticks(5)
-    .tickFormat(d3.format(",.2s"));
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(5)
+        .tickFormat(d3.format(",.2s"));
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(5);
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5)
+        .tickFormat(d3.format(",.2s"));
 
-var color = d3.scale.category10();
+    var color = d3.scale.category10();
 
-d3.csv("state.x77.csv", function(error, data) {
-  var domainByRegion = {},
-      traits = d3.keys(data[0]).filter(function(d) { return d !== "state.region" && d !== "Population" && d!== "state.division" && d!=="state.abb" && d!= "state.name" && d!= "Frost" && d!= "Murder" && d!="Area"}),
-      n = traits.length;
+    d3.csv("state.x77.csv", function(error, data) {
+      var domainByTrait = {},
+          traits = d3.keys(data[0]).filter(function(d) { return d !== "state.region" && d !== "Population" && d!== "state.division" && d!=="state.abb" && d!= "state.name" && d!= "Frost" && d!= "Murder" && d!="Area"}),
+          n = traits.length;
 
-  traits.forEach(function(trait) {
-    domainByRegion[trait] = d3.extent(data, function(d) { return d[trait]; });
-  });
+      traits.forEach(function(trait) {
+        domainByTrait[trait] = d3.extent(data, function(d) { return d[trait]; });
+      });
 
-  xAxis.tickSize(size * n);
-  yAxis.tickSize(-size * n);
+      xAxis.tickSize(size * n);
+      yAxis.tickSize(-size * n);
 
-  var brush = d3.svg.brush()
-      .x(x)
-      .y(y)
-      .on("brushstart", brushstart)
-      .on("brush", brushmove)
-      .on("brushend", brushend);
+      var brush = d3.svg.brush()
+          .x(x)
+          .y(y)
+          .on("brushstart", brushstart)
+          .on("brush", brushmove)
+          .on("brushend", brushend);
 
-  var svg = d3.select("body").append("svg").attr("class","plot2")
-      .attr("width", size * n + padding)
-      .attr("height", size * n + padding)
-    .append("g")
-      .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
 
-  svg.selectAll(".x.axis")
-      .data(traits)
-    .enter().append("g")
-      .attr("class", "xaxis2")
-      .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
-      .each(function(d) { x.domain(domainByRegion[d]); d3.select(this).call(xAxis); });
+        var xe = 300
+      var svg = d3.select("#bubble").append("svg")
+          .attr("width", size * n + padding)
+          .attr("height", size * n + padding)
+        .append("g")
+          .attr("transform", "translate(" + padding + "," + padding + ")");
 
-  svg.selectAll(".y.axis")
-      .data(traits)
-    .enter().append("g")
-      .attr("class", "yaxis2")
-      .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
-      .each(function(d) { y.domain(domainByRegion[d]); d3.select(this).call(yAxis); });
+      svg.selectAll(".x.axis")
+          .data(traits)
+        .enter().append("g")
+          .attr("class", "xaxis2")
+          .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
+          .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
 
-  var cell = svg.selectAll(".cell")
-      .data(cross(traits, traits))
-    .enter().append("g")
-      .attr("class", "cell2")
-      .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; })
-      .each(plot);
+      svg.selectAll(".y.axis")
+          .data(traits)
+        .enter().append("g")
+          .attr("class", "yaxis2")
+          .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
+          .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
 
-  // Titles for the diagonal.
-  cell.filter(function(d) { return d.i === d.j; }).append("text")
-      .attr("x", padding)
-      .attr("y", padding)
-      .attr("dy", ".71em")
-      .text(function(d) { return d.x; });
+      var cell = svg.selectAll(".cell")
+          .data(cross(traits, traits))
+        .enter().append("g")
+          .attr("class", "cell2")
+          .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; })
+          .each(plot);
 
-  cell.call(brush);
+      // Titles for the diagonal.
+      cell.filter(function(d) { return d.i === d.j; }).append("text")
+          .attr("x", padding)
+          .attr("y", padding)
+          .attr("dy", ".71em")
+          .text(function(d) { return d.x; });
 
-  function plot(p) {
-    var cell = d3.select(this);
+      cell.call(brush);
 
-    x.domain(domainByRegion[p.x]);
-    y.domain(domainByRegion[p.y]);
+      function plot(p) {
+        var cell = d3.select(this);
 
-    cell.append("rect")
-        .attr("class", "frame2")
-        .attr("x", padding / 2)
-        .attr("y", padding / 2)
-        .attr("width", size - padding)
-        .attr("height", size - padding);
+        x.domain(domainByTrait[p.x]);
+        y.domain(domainByTrait[p.y]);
 
-    cell.selectAll("circle")
-        .data(data)
-      .enter().append("circle")
-        .attr("cx", function(d) { return x(d[p.x]); })
-        .attr("cy", function(d) { return y(d[p.y]); })
-        .attr("r", 3)
-        .style("fill", function(d) { return color(d["state.region"]); });
-  }
+        cell.append("rect")
+            .attr("class", "frame2")
+            .attr("x", padding / 2)
+            .attr("y", padding / 2)
+            .attr("width", size - padding)
+            .attr("height", size - padding);
 
- 
-  var brushCell;
+        cell.selectAll("circle")
+            .data(data)
+          .enter().append("circle")
+            .attr("cx", function(d) { return x(d[p.x]); })
+            .attr("cy", function(d) { return y(d[p.y]); })
+            .attr("r", 3)
+            .style("fill", function(d) { return color(d["state.region"]); });
+      }
 
-  // Clear the previously-active brush, if any.
-  function brushstart(p) {
-    if (brushCell !== this) {
-      d3.select(brushCell).call(brush.clear());
-      x.domain(domainByRegion[p.x]);
-      y.domain(domainByRegion[p.y]);
-      brushCell = this;
-    }
-  }
+      var brushCell;
 
-  // Highlight the selected circles.
-  function brushmove(p) {
-    var e = brush.extent();
-    svg.selectAll("circle").classed("hidden", function(d) {
-      return e[0][0] > d[p.x] || d[p.x] > e[1][0]
-          || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+      // Clear the previously-active brush, if any.
+      function brushstart(p) {
+        if (brushCell !== this) {
+          d3.select(brushCell).call(brush.clear());
+          x.domain(domainByTrait[p.x]);
+          y.domain(domainByTrait[p.y]);
+          brushCell = this;
+        }
+      }
+
+      // Highlight the selected circles.
+      function brushmove(p) {
+        var e = brush.extent();
+        svg.selectAll("circle").classed("hidden", function(d) {
+          return e[0][0] > d[p.x] || d[p.x] > e[1][0]
+              || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+        });
+      }
+
+      // If the brush is empty, select all circles.
+      function brushend() {
+        if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
+      }
+
+      function cross(a, b) {
+        var c = [], n = a.length, m = b.length, i, j;
+        for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
+        return c;
+      }
+
+      d3.select(self.frameElement).style("height", size * n + padding + 20 + "px");
     });
-  }
-
-  // If the brush is empty, select all circles.
-  function brushend() {
-    if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
-  }
-
-  function cross(a, b) {
-    var c = [], n = a.length, m = b.length, i, j;
-    for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
-    return c;
-  }
-
-  d3.select(self.frameElement).style("height", size * n + padding + 20 + "px");
-});
 
 </script>
 
-<div>
-<ul style="list-style-type:none">
-<li "style-type: none"><a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/smallMultiplewithBrushing.html">Code</a></li>
-</div>
-
-</ul>
 </div>
 <div class="container">
+  <a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/smallMultiplewithBrushing.html">Code</a>
 <h3>Implementation Details</h3>
 
   <p style ="font-size:16px"></p>
@@ -268,5 +265,5 @@ d3.csv("state.x77.csv", function(error, data) {
 </div>
 </body>
 
+</body>
 </html>
-

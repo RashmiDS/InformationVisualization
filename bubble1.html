@@ -14,53 +14,45 @@
 <style>
 
 
-body {
-  font: 13px sans-serif;
-}
-/*
-#id axis path,
-#id axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}*/
-.yaxis path,
-.yaxis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+  body {
+    font: 13px sans-serif;
+  }
+
+  .yaxis1 path,
+  .yaxis1 line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
 
 
-.xaxis path,
-.xaxis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+  .xaxis1 path,
+  .xaxis1 line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
 
-.dot {
-  stroke: #000;
-}
+  .dot1 {
+    stroke: #000;
+  }
 
-.dot:hover {
-  opacity: 0.5;
-}
+  .dot1:hover {
+    opacity: 0.5;
+  }
 
-.tooltip1 {
-  position: absolute;
-  width: 200px;
-  height: 28px;
-  pointer-events: none;
-}
+  .tooltip1 {
+    position: absolute;
+    width: 200px;
+    height: 28px;
+    pointer-events: none;
+  }
 
 </style>
 </head>
 
 
 <body> 
-<label><input type="checkbox"> Sort values</label>
-
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -93,158 +85,154 @@ body {
         <h2 style="text-align: center">Bubble Chart</h2>
     </div>
 </div>  
+<div class="container" id="plot1"</div>
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-/* 
- * value accessor - returns the value to encode for a given data object.
- * scale - maps value to a visual display encoding, such as a pixel position.
- * map function - maps from data value to display value
- * axis - sets up axis
- */ 
-
-// setup x 
-var xValue = function(d) { return d.Income;}, // data -> value
-    xScale = d3.scale.linear().range([0, width]), // value -> display
-    xMap = function(d) { return xScale(xValue(d));}, // data -> display
-    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
-
-// setup y
-var yValue = function(d) { return d["Life.Exp"];}, // data -> value
-    yScale = d3.scale.linear().range([height, 0]), // value -> display
-    yMap = function(d) { return yScale(yValue(d));}, // data -> display
-    yAxis = d3.svg.axis().scale(yScale).orient("left");
-
-// setup fill color
-var cValue = function(d) { return d["state.region"];},
-    color = d3.scale.category10();
-
-// var scale = function(d){return d["Area"];},
-//     area = d3.scale.category10
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = 900,
+        height = 450;
 
 
-// add the graph canvas to the body of the webpage
-var svg = d3.select("body").append("svg").attr("id", "plot1")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // setup x 
+    var xValue = function(d) { return d.Income;}, // data -> value
+        xScale = d3.scale.linear().range([0, width]), // value -> display
+        xMap = function(d) { return xScale(xValue(d));}, // data -> display
+        xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-// add the tooltip area to the webpage
-var tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip1")
-    .style("opacity", 0);
+    // setup y
+    var yValue = function(d) { return d["Life.Exp"];}, // data -> value
+        yScale = d3.scale.linear().range([height, 0]), // value -> display
+        yMap = function(d) { return yScale(yValue(d));}, // data -> display
+        yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+    // setup fill color
+    var cValue = function(d) { return d["state.region"];},
+        color = d3.scale.category10();
+
+    // var scale = function(d){return d["Area"];},
+    //     area = d3.scale.category10
 
 
-// load data
-d3.csv("state.x77.csv", function(error, data) {
+    // add the graph canvas to the body of the webpage
+    var svg = d3.select("#plot1").append("svg").attr("id", "plot1")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // change string (from CSV) into number format
-  data.forEach(function(d) {
-    d.Income = +d.Income;
-    d["Life.Exp"] = +d["Life.Exp"];
-//    console.log(d);
-  });
+    // add the tooltip area to the webpage
+    var tooltip = d3.select("#plot1").append("div")
+        .attr("class", "tooltip1")
+        .style("opacity", 0);
 
-var scale = d3.scale.sqrt()
-                      .domain([d3.min(data, function (d) { return d["size"]; }), d3.max(data, function (d) { return d["size"]; })])
-                      .range([1, 20]);
 
-xScale.domain(d3.extent(data, function(d) { return d.Income; })).nice();
-yScale.domain(d3.extent(data, function(d) { return d["Life.Exp"]; })).nice();
+    // load data
+    d3.csv("state.x77.csv", function(error, data) {
 
-  // x-axis
-  svg.append("g")
-      .attr("class", "xaxis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("x", width)
-      .attr("y", -6)
-      .style("text-anchor", "end")
-      .text("Income");
-
-  // y-axis
-  svg.append("g")
-      .attr("class", "yaxis")
-      .call(yAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Life Expectancy");
-
-  // draw dots
-  svg.selectAll(".dot")
-      .data(data)
-    .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", function(d){return (Math.sqrt(d["Area"]/1000.0));})
-      .attr("cx", xMap)
-      .attr("cy", yMap)
-      // .attr("radius", function (d) { return scale(d["Area"]); })
-      .style("fill", function(d) { return color(cValue(d));}) 
-      .on("mouseover", function(d) {
-          tooltip.transition()
-               .duration(200)
-               .style("opacity", .9);
-          tooltip.html(d["state.name"] + "<br/> (" + xValue(d) 
-          + ", " + yValue(d) + ")")
-               .style("left", (d3.event.pageX + 5) + "px")
-               .style("top", (d3.event.pageY - 28) + "px");
-      })
-      .on("mouseout", function(d) {
-          tooltip.transition()
-               .duration(500)
-               .style("opacity", 0);
+      // change string (from CSV) into number format
+      data.forEach(function(d) {
+        d.Income = +d.Income;
+        d["Life.Exp"] = +d["Life.Exp"];
+    //    console.log(d);
       });
 
- 
+    var scale = d3.scale.sqrt()
+                          .domain([d3.min(data, function (d) { return d["size"]; }), d3.max(data, function (d) { return d["size"]; })])
+                          .range([1, 20]);
 
-  // draw legend
-  var legend = svg.selectAll(".legend")
-      .data(color.domain())
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+    xScale.domain(d3.extent(data, function(d) { return d.Income; })).nice();
+    yScale.domain(d3.extent(data, function(d) { return d["Life.Exp"]; })).nice();
 
-  // draw legend colored rectangles
-  legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
+      // x-axis
+      svg.append("g")
+          .attr("class", "xaxis1")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+        .append("text")
+          .attr("class", "label")
+          .attr("x", width)
+          .attr("y", -6)
+          .style("text-anchor", "end")
+          .text("Income");
 
-  // draw legend text
-  legend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) { return d;})
-});
+      // y-axis
+      svg.append("g")
+          .attr("class", "yaxis1")
+          .call(yAxis)
+        .append("text")
+          .attr("class", "label")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text("Life Expectancy");
 
-function fade(c, opacity) {
-                              svg.selectAll("circle")
-                                  .filter(function (d) {
-                                      return d.c != c;
-                                  })
-                                .transition()
-                                 .style("opacity", opacity);
-                          }
+      // draw dots
+      svg.selectAll(".dot")
+          .data(data)
+        .enter().append("circle")
+          .attr("class", "dot1")
+          .attr("r", function(d){return (Math.sqrt(d["Area"]/1000.0));})
+          .attr("cx", xMap)
+          .attr("cy", yMap)
+          // .attr("radius", function (d) { return scale(d["Area"]); })
+          .style("fill", function(d) { return color(cValue(d));}) 
+          .on("mouseover", function(d) {
+              tooltip.transition()
+                   .duration(200)
+                   .style("opacity", .9);
+              tooltip.html(d["state.name"] + "<br/> (" + xValue(d) 
+              + ", " + yValue(d) + ")")
+                   .style("left", (d3.event.pageX + 5) + "px")
+                   .style("top", (d3.event.pageY - 28) + "px");
+          })
+          .on("mouseout", function(d) {
+              tooltip.transition()
+                   .duration(500)
+                   .style("opacity", 0);
+          });
 
-                          function fadeOut() {
-                              svg.selectAll("circle")
-                              .transition()
-                                 .style("opacity", function (d) { opacity(d.size); });
-                          }
+     
+
+      // draw legend
+      var legend = svg.selectAll(".legend")
+          .data(color.domain())
+        .enter().append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+      // draw legend colored rectangles
+      legend.append("rect")
+          .attr("x", width - 18)
+          .attr("width", 18)
+          .attr("height", 18)
+          .style("fill", color);
+
+      // draw legend text
+      legend.append("text")
+          .attr("x", width - 24)
+          .attr("y", 9)
+          .attr("dy", ".35em")
+          .style("text-anchor", "end")
+          .text(function(d) { return d;})
+    });
+
+    function fade(c, opacity) {
+                                  svg.selectAll("circle")
+                                      .filter(function (d) {
+                                          return d.c != c;
+                                      })
+                                    .transition()
+                                     .style("opacity", opacity);
+                              }
+
+                              function fadeOut() {
+                                  svg.selectAll("circle")
+                                  .transition()
+                                     .style("opacity", function (d) { opacity(d.size); });
+                              }
 
 </script>
 <div>
