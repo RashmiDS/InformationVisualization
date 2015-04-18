@@ -82,6 +82,9 @@ svg {
         <h2 style="text-align: center">Parallel Chart</h2>
     </div>
 </div>  
+
+<div class="container" id = "plot3"></div>
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
@@ -100,7 +103,7 @@ var line = d3.svg.line(),
     background,
     foreground;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#plot3").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")

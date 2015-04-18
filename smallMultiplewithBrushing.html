@@ -149,13 +149,11 @@
           .on("brush", brushmove)
           .on("brushend", brushend);
 
-
-        var xe = 300
       var svg = d3.select("#bubble").append("svg")
-          .attr("width", size * n + padding)
-          .attr("height", size * n + padding)
+          .attr("width", 700)
+          .attr("height", 650)
         .append("g")
-          .attr("transform", "translate(" + padding + "," + padding + ")");
+          .attr("transform", "translate(" + padding + "," + padding/2 + ")");
 
       svg.selectAll(".x.axis")
           .data(traits)
