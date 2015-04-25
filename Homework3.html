@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MSAN 622 Information Visualization</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+ <style type="text/css">
+   /* body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+        padding-left: 50px;
+        padding-right: 50px;
+      */  font: 14px sans-serif;
+    }
+    .myheader {
+        font-size: 30px;
+    }
+
+    body {
+  font: 14px sans-serif;
+}
+</style>
+</head>
+
+<body> 
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MSAN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="http://rashmids.github.io/InformationVisualization/">Home</a></li>
+                <li><a href="/InformationVisualization/#project">Project</a></li>
+                <!-- <li><a href="/InformationVisualization/#participation">Participation</a></li> -->
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/InformationVisualization/#about">About</a></li>
+                <li><a href="/InformationVisualization/#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h2 style="text-align: center">Homework 3 : Time Series Visualisation</h2>
+        <h4 style = "text-align: center"> Rashmi Malani<h4>
+    </div>
+</div>  
+
+  <!-- Import d3 -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<!-- Stacked Bar CHART -->
+
+<h1 class="Stacked Bar Chart">Stacked Bar chart</h1>
+<p id="stackedbar"></p>
+<style>
+
+svg {
+  font: 10px sans-serif;
+}
+
+.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}
+
+.xaxis9 path,
+.xaxis9 line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.yaxis9 path,
+.yaxis9 line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;}
+
+/*div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+                
+  padding: 2px;             
+  font: 14px sans-serif;        
+  background: lightsteelblue;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}*/
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+// var color = d3.scale.category20();
+
+var margin = {top: 10, right: 10, bottom: 100, left: 40},
+    margin2 = {top: 430, right: 10, bottom: 20, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom,
+    height2 = 500 - margin2.top - margin2.bottom;
+
+var parseDate = d3.time.format("%b-%y").parse;
+
+var x = d3.time.scale().range([0, width]),
+    x2 = d3.time.scale().range([0, width]),
+    y = d3.scale.linear().range([height, 0]),
+    y2 = d3.scale.linear().range([height2, 0]);
+
+var xAxis = d3.svg.axis().scale(x).orient("bottom"),
+    xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
+    yAxis = d3.svg.axis().scale(y).orient("left");
+
+var brush = d3.svg.brush()
+    .x(x2)
+    .on("brush", brushed);
+
+var stack = d3.layout.stack()
+    .values(function(d) { return d.values; });
+
+var stackedArea = d3.svg.area()
+  .interpolate("basis")
+  .x(function(d) { return x(d.date); })
+    .y0(function(d) { return y(d.y0); })
+    .y1(function(d) { return y(d.y0 + d.y); });
+
+var stackedArea2 = d3.svg.area()
+  .interpolate("basis")
+  .x(function(d) { return x2(d.date); })  
+    .y0(function(d) { return y2(d.y0); })
+    .y1(function(d) { return y2(d.y0 + d.y); });
+    //.y0(height2)
+    //.y1(function(d) { return y2(d.y0 + d.y); });
+
+var area = d3.svg.area()
+    .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y0(function(d){return y(d.y0);})
+    .y1(function(d) { return y(d.y0 + d.y); });
+
+var color = d3.scale.category20();
+
+var area2 = d3.svg.area()
+    .interpolate("basis")
+    .x(function(d) { return x2(d.date); })
+    .y0(function(d){return y2(d.y0);})
+    .y1(function(d) { return y2(d.y0 + d.y); });
+
+var svg = d3.select("#stackedbar").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var clip = svg.append("svg:clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", width)
+    .attr("height", height);
+
+var focus = svg.append("g")
+    .attr("id", "focus")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var context = svg.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+ // console.log("before")
+
+
+
+d3.csv("seatbelts.csv", function(error, data) {
+
+  color.domain(d3.keys(data[0]).filter(function(key) { return key != "date" && key!="kms" 
+      && key!= "PetrolPrice" && key!= "VanKilled" && key!="law" && key!="drivers"; }));
+
+  data.forEach(function(d) {
+      d.date = parseDate(d.date)
+      // d.value = d.value;
+    });
+
+  var browsers = stack(color.domain().map(function(name) {
+      return {
+        name: name,
+        values: data.map(function(d) {
+          return {date: d.date, y: +d[name]};
+        })
+      };
+    }));  
+
+  console.log(browsers)
+
+
+  x.domain(d3.extent(data.map(function(d) { return d.date; })));
+  y.domain([0,d3.max(browsers, function(d) { return d3.max(d.values, function (d) { return d.y + d.y0; }); })]);
+  // y.domain([0, d3.max(data.map(function(d) { return d.values; }))]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+
+
+  focus.selectAll("path")
+      .data(browsers)
+      .enter()
+      .append('path')
+      .attr('clip-path','url(#clip)')
+      .attr("class", "focus")
+      .attr("d", function(d){return area(d.values);})
+      .style("fill",function(d){return color(d.name);});
+
+
+  focus.append("g")
+      .attr("class", "xaxis9")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  focus.append("g")
+      .attr("class", "yaxis9")
+      .call(yAxis);
+      // .append("text")
+
+
+//  focus.append("text")
+// .data(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+// .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.y0 + d.value.y / 2) + ")"; })
+// .attr("x", -6)
+// .attr("dy", ".35em")
+// .text(function(d) { return d.name; });
+
+  context.selectAll("path")
+      .data(browsers)
+      .enter()
+      .append('path')
+      .attr("class", "context")
+      .attr("d", function(d){return area2(d.values);})
+      .style("fill",function(d){return color(d.name);});
+
+  context.append("g")
+      .attr("class", "xaxis9")
+      .attr("transform", "translate(0," + height2 + ")")
+      .call(xAxis2);
+
+  context.append("g")
+      .attr("class", "x brush")
+      .call(brush)
+    .selectAll("rect")
+      .attr("y", -6)
+      .attr("height", height2 + 7);
+
+  var div = d3.select("#stackedbar").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+
+    // draw legend
+      var legend = svg.selectAll(".legend")
+          .data(color.domain())
+        .enter().append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+      // draw legend colored rectangles
+      legend.append("rect")
+          .attr("x", width - 18)
+          .attr("width", 18)
+          .attr("height", 18)
+          .style("fill", color);
+
+      // draw legend text
+      legend.append("text")
+          .attr("x", width - 24)
+          .attr("y", 9)
+          .attr("dy", ".35em")
+          .style("text-anchor", "end")
+          .text(function(d) { return d;})
+    });
+
+    
+// });
+
+function brushed() {
+  x.domain(brush.empty() ? x2.domain() : brush.extent());
+  focus.selectAll("path.focus").attr("d", function(d){return area(d.values)}); 
+  focus.select(".xaxis9").call(xAxis);  
+};
+
+
+</script>
+
+<br> </br>
+<hr> </hr>
+<br> </br>
+
+<h1 class="MultipleLine"> Line Chart </h1>
+<p id="multiline"></p>
+
+<style> /* set the CSS */
+
+/*body { font: 12px Arial;}*/
+svg {
+  font: 10px sans-serif;
+}
+
+svg#plot2 path { 
+    stroke: green;
+    stroke-width: 2;
+    fill: none;
+}
+
+
+svg#plot2 .xaxis8 path,
+svg#plot2 .xaxis8 line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+svg#plot2 .yaxis8 path,
+svg#plot2 .yaxis8 line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+svg#plot2 .xaxis8 text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+svg#plot2 .yaxis8 text {
+    font-family: sans-serif;
+    font-size: px;
+}
+
+
+</style>
+<body>
+
+<!-- load the d3.js library -->    
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+// Set the dimensions of the canvas / graph
+var margin8 = {top: 30, right: 20, bottom: 30, left: 50},
+    width8 = 960 - margin8.left - margin8.right,
+    height8 = 500 - margin8.top - margin8.bottom;
+
+// Parse the date / time
+var parseDate8 = d3.time.format("%b-%y").parse,
+    formatDate8 = d3.time.format("%d-%b"),
+    bisectDate8 = d3.bisector(function(d) { return d.date; }).left;
+
+// Set the ranges
+var x8 = d3.time.scale().range([0, width8]);
+var y8 = d3.scale.linear().range([height8, 0]);
+
+// Define the axes
+var xAxis8 = d3.svg.axis().scale(x8)
+    .orient("bottom").ticks(7);
+
+var yAxis8 = d3.svg.axis().scale(y8)
+    .orient("left").ticks(7);
+
+// Define the line
+var valueline8 = d3.svg.line()
+    .x(function(d) { return x8(d.date); })
+    .y(function(d) { return y8(d.close); });
+    
+// Adds the svg canvas
+var svg8 = d3.select("#multiline")
+    .append("svg")
+    .attr("id","plot2")
+        .attr("width", width8 + margin8.left + margin8.right)
+        .attr("height", height8 + margin8.top + margin8.bottom)
+    .append("g")
+        .attr("transform", 
+              "translate(" + margin8.left + "," + margin8.top + ")");
+
+var lineSvg8 = svg8.append("g"); 
+
+var focus8 = svg8.append("g") 
+    .style("display", "none");
+
+
+// Get the data
+d3.csv("seatbelts.csv", function(error, data) {
+    data.forEach(function(d) {
+        d.date = parseDate8(d.date);
+        d.close = +d.drivers;
+    });
+
+    // console.log(lineSvg8)
+
+    // Scale the range of the data
+    x8.domain(d3.extent(data, function(d) { return d.date; }));
+    y8.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+    // Add the valueline path.
+    lineSvg8.append("path")
+        .attr("class", "line")
+        .attr("d", valueline8(data));
+
+    // Add the X Axis
+    svg8.append("g")
+        .attr("class", "xaxis8")
+        .attr("transform", "translate(0," + height8 + ")")
+        .call(xAxis8);
+
+    // Add the Y Axis
+    svg8.append("g")
+        .attr("class", "yaxis8")
+        .call(yAxis8);
+
+   // append the x line
+    focus8.append("line")
+        .attr("class", "x")
+        .style("stroke", "green")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("y1", 0)
+        .attr("y2", height8);
+
+    // append the y line
+    focus8.append("line")
+        .attr("class", "y")
+        .style("stroke", "green")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("x1", width8)
+        .attr("x2", width8);
+
+    // append the circle at the intersection
+    focus8.append("circle")
+        .attr("class", "y")
+        .style("fill", "none")
+        .style("stroke", "green")
+        .attr("r", 4);
+
+    // place the value at the intersection
+    focus8.append("text")
+        .attr("class", "y1")
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "-.3em");
+    focus8.append("text")
+        .attr("class", "y2")
+        .attr("dx", 8)
+        .attr("dy", "-.3em");
+
+    // place the date at the intersection
+    focus8.append("text")
+        .attr("class", "y3")
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "1em");
+    focus8.append("text")
+        .attr("class", "y4")
+        .attr("dx", 8)
+        .attr("dy", "1em");
+    
+    // append the rectangle to capture mouse
+    svg8.append("rect")
+        .attr("width", width8)
+        .attr("height", height8)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mouseover", function() { focus8.style("display", null); })
+        .on("mouseout", function() { focus8.style("display", "none"); })
+        .on("mousemove", mousemove);
+
+    function mousemove() {
+    var x0 = x8.invert(d3.mouse(this)[0]),
+        i = bisectDate8(data, x0, 1),
+        d0 = data[i - 1],
+        d1 = data[i],
+        d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+    focus8.select("circle.y")
+        .attr("transform",
+              "translate(" + x8(d.date) + "," +
+                             y8(d.close) + ")");
+
+    focus8.select("text.y1")
+        .attr("transform",
+              "translate(" + x8(d.date) + "," +
+                             y8(d.close) + ")")
+        .text(d.close);
+
+    focus8.select("text.y2")
+        .attr("transform",
+              "translate(" + x8(d.date) + "," +
+                             y8(d.close) + ")")
+        .text(d.close);
+
+    focus8.select("text.y3")
+        .attr("transform",
+              "translate(" + x8(d.date) + "," +
+                             y8(d.close) + ")")
+        .text(formatDate8(d.date));
+
+    focus8.select("text.y4")
+        .attr("transform",
+              "translate(" + x8(d.date) + "," +
+                             y8(d.close) + ")")
+        .text(formatDate8(d.date));
+
+    focus8.select(".x")
+        .attr("transform",
+              "translate(" + x8(d.date) + "," +
+                             y8(d.close) + ")")
+                   .attr("y2", height8 - y8(d.close));
+
+    focus8.select(".y")
+        .attr("transform",
+              "translate(" + width8 * -1 + "," +
+                             y8(d.close) + ")")
+                   .attr("x2", width8 + width8);
+  }
+
+  svg8.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width8)
+    .attr("y", height8 - 6)
+    .text("Date");
+
+  svg8.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Number of Drivers killed in accident");
+
+});
+
+</script>
+
+
+<br> </br>
+<hr> </hr>
+<br> </br>
+
+<div>
+<ul style="list-style-type:none">
+<li "style-type: none"><a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/Homework3.html">Code</a></li>
+</ul>
+</div>
+<div class="container">
+<h3>Implementation Details</h3>
+
+  <p style ="font-size:16px"> C level</p>
+  <ul>
+    <li> Line Chart </li>
+    <li> Stacked Area Plot </li>
+  </ul>
+  <p style ="font-size:16px"> B level</p>
+  <ul>
+    <li> Details-on-Demand </li>
+    <li> Panning </li>
+  </ul>
+  <p style ="font-size:16px"> A level</p>
+  <ul>
+    <li> Brushing </li>
+    <li> Linked View<li>
+  </ul>
+
+<h1>Discussion</h1>
+
+  <p> This is the seatbelts data from R. It has multiple time series for number of deaths in Great Britian from 1969-1984. I am using three of its time seriesThis is the seatbelts data from R. It has multiple time series for number of deaths in Great Britian from 1969-1984. I am using three of its time series depicting drivers killed, front seat passengers killed or injured and rear seat passengers killed or injured. There was no date column in data. So I had to add a column to assign date to every row. Now every row indicates number of average deaths/injuries from Jan 1969 to Dec 1984. I exported the data in cvs format.</p>
+
+  <p>Interactive time series were fun to implement. I implemented Multi-series time series but it was difficult to get tooltip on all three of it, so I just included one time series chart in my final submission due to time contraint.</p>
+
+  <p>Stacked area chart with panning and brushing was inspired by Mike Bostoc’s example. It was bit challenging to add stacked areas in the chart because of new term called clippath. I think I can have multi series time chart with tooltip with clip path.
+  We can see that the number of casualties is maximum for front seat passengers. Surprisingly more rear seat passengers are killed than driversKilled.</p>
+</div>
+</body>
+
+</html>
