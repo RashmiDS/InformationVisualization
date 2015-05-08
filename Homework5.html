@@ -121,14 +121,14 @@ svg {
     fill: royalblue;
     fill-opacity: 0.25;
 
-    stroke: royalblue;
+    stroke: none;
     stroke-width: 1px;
     stroke-opacity: 1.0;
 }
 
 
 circle.highlight {
-    stroke: orangered;
+    stroke: green;
     stroke-width: 2px;
 }
 
@@ -292,7 +292,10 @@ function symbolMap() {
             .attr("d", path)
             .classed({"world": true});
 
-        
+        var color = d3.scale.linear()
+                        .domain([0, 20])
+                        .range(["white", "green"])
+                        .interpolate(d3.interpolateLab);
          // console.log(data)
         // draw symbols
         symbols.selectAll("circle")
@@ -311,7 +314,7 @@ function symbolMap() {
                 return projection([d.longitude, d.latitude])[1];
             })
             .classed({"symbol": true})
-            .style("fill",function(d){color(d.depth);})
+            .style("fill",function(d){return color(d.depth);})
             .on("mouseover", showHighlight)
             .on("mouseout", hideHighlight);
 
