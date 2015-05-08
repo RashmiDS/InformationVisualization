@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MSAN 622 Information Visualization</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+  <style>
+      body,text {
+      font: 11px sans-serif;
+    }
+    .axis path,
+    .axis line {
+      fill: white;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    svg#stackedgroupedbar .x.axis path {
+      display: none;
+    }
+    svg#stackedgroupedbar .y.axis path {
+      display: none;
+    }
+
+   .radio-toolbar label {
+        display:inline-block;
+        padding:4px 11px;
+        font-family:sans-serif;
+        font-size:14px;
+    }
+
+    form {
+      position: absolute;
+      right: 600px;
+      top: 300px;
+    }
+  </style>
+</head>
+
+<body> 
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MSAN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="http://rashmids.github.io/InformationVisualization/">Home</a></li>
+                <li><a href="/InformationVisualization/#project">Project</a></li>
+                <!-- <li><a href="/InformationVisualization/#participation">Participation</a></li> -->
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/InformationVisualization/#about">About</a></li>
+                <li><a href="/InformationVisualization/#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h2 style="text-align: center">Project Prototype</h2>
+        <h4 style = "text-align: center"> Rashmi Malani<h4>
+    </div>
+</div>  
+
+  <!-- Import d3 -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<!-- Stacked Bar CHART -->
+
+<h1 class="Stacked Bar Chart">Stacked-to-Grouped Bar Chart</h1>
+<p id="stackedgroupedbar"></p>
+
+<body>
+  <form>
+    <div class="radio-toolbar">  
+  <label><input type="radio" name="mode" value="grouped"> Grouped</label>
+  <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
+    </div>
+</form>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+    var n = 5, // number of layers
+        m = 50; // number of samples per layer
+
+    var margin = {top: 20, right: 50, bottom: 50, left: 75},
+        width = 1100 - margin.left - margin.right,
+        height = 510 - margin.top - margin.bottom;
+
+    var svg = d3.select("#stackedgroupedbar").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.csv("VulPop.csv", function (data){
+        
+        var headers = ["NoHighSchoolDiploma","Unemployed","DisabledToWork","MajorDepression","RecentDrugUse"];
+        
+        var layers = d3.layout.stack()(headers.map(function(priceRange) {
+            return data.map(function(d) {
+              return {x: d.statename, y: +d[priceRange]};
+            });
+        }));
+        
+        var yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); });
+        var yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+
+        var xScale = d3.scale.ordinal()
+            .domain(layers[0].map(function(d) { return d.x; }))
+            .rangeRoundBands([25, width], .08);
+
+        var y = d3.scale.linear()
+            .domain([0, yStackMax])
+            .range([height, 0]);
+
+        var color = d3.scale.ordinal()
+            .domain(headers)
+            .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+        var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .tickSize(0)
+            .tickPadding(6)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            // .tickFormat("none")
+            .tickFormat(d3.format(".2s"));
+
+        var layer = svg.selectAll(".layer")
+            .data(layers)
+            .enter().append("g")
+            .attr("class", "layer")
+            .style("fill", function(d, i) { return color(i); });
+
+        var rect = layer.selectAll("rect")
+            .data(function(d) { return d; })
+            .enter().append("rect")
+            .attr("x", function(d) { return xScale(d.x); })
+            .attr("y", height)
+            .attr("width", xScale.rangeBand())
+            .attr("height", 0);
+
+        rect.transition()
+            .delay(function(d, i) { return i * 10; })
+            .attr("y", function(d) { return y(d.y0 + d.y); })
+            .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+
+        //********** AXES ************
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text").style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", function(d) {
+                      return "rotate(-90)" 
+                    });
+
+          svg.append("text")
+          .attr("class", "x label")
+          .style("text-anchor", "middle")
+          .style("font-size",14)
+          .style("font-family","sans-serif")
+          .attr("x", 525)
+          .attr("y", 480)
+          .text("States");
+        
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(20,0)")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr({"x": -150, "y": -70})
+            .attr("dy", ".75em")
+            .style("text-anchor", "end")
+            .style("font-size",14)
+            .style("font-family","sans-serif")
+            .text("Value");
+
+        var legend = svg.selectAll(".legend")
+            .data(headers.slice().reverse())
+                .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) { return "translate(-20," + i * 20 + ")"; });
+           
+            legend.append("rect")
+                .attr("x", width - 1)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", color);
+        
+            legend.append("text")
+                  .attr("x", width - 7)
+                  .attr("y", 9)
+                  .attr("dy", ".35em")
+                  .style("text-anchor", "end")
+                  .text(function(d) { return d; });
+
+
+        d3.selectAll("input").on("change", change);
+
+        var timeout = setTimeout(function() {
+          d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
+        }, 2000);
+
+        function change() {
+          clearTimeout(timeout);
+          if (this.value === "grouped") transitionGrouped();
+          else transitionStacked();
+        }
+
+        function transitionGrouped() {
+          y.domain([0, yGroupMax]);
+
+          rect.transition()
+              .duration(500)
+              .delay(function(d, i) { return i * 30; })
+              .attr("x", function(d, i, j) { return xScale(d.x) + xScale.rangeBand() / n * j; })
+              .attr("width", xScale.rangeBand() / n)
+            .transition()
+              .attr("y", function(d) { return y(d.y); })
+              .attr("height", function(d) { return height - y(d.y); });
+
+          rect.on("mouseover", function() { tooltip.style("display", null); })
+            .on("mouseout", function() { tooltip.style("display", "none"); })
+            .on("mousemove", function(d) {
+              var xPosition = d3.mouse(this)[0] - 15;
+              var yPosition = d3.mouse(this)[1] - 25;
+              tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+              tooltip.select("text").text(d.y);
+            });
+            svg.select("g.y")
+                .remove();
+            svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(20,0)")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr({"x": -150, "y": -70})
+            .attr("dy", ".75em")
+            .style("text-anchor", "end")
+            .style("font-size",14)
+            .style("font-family","sans-serif")
+            .text("Value");
+        };
+
+        function transitionStacked() {
+          y.domain([0, yStackMax]);
+
+          rect.transition()
+              .duration(500)
+              .delay(function(d, i) { return i * 30; })
+              .attr("y", function(d) { return y(d.y0 + d.y); })
+              .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+            .transition()
+              .attr("x", function(d) { return xScale(d.x); })
+              .attr("width", xScale.rangeBand());
+
+          rect.on("mouseover", function() { tooltip.style("display", null); })
+            .on("mouseout", function() { tooltip.style("display", "none"); })
+            .on("mousemove", function(d) {
+              var xPosition = d3.mouse(this)[0] - 15;
+              var yPosition = d3.mouse(this)[1] - 25;
+              tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+              tooltip.select("text").text(d.y);
+            });
+
+            svg.select("g.y")
+                .remove();
+
+            svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(20,0)")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr({"x": -150, "y": -70})
+            .attr("dy", ".75em")
+            .style("text-anchor", "end")
+            .style("font-size",14)
+            .style("font-family","sans-serif")
+            .text("Value");
+        };
+
+        var tooltip = svg.append("g")
+            .attr("class", "tooltip_sb");
+            
+        tooltip.append("rect")
+            .attr("width", 44)
+            .attr("height", 20)
+            .attr("fill", "grey")
+            .style("opacity", 0.5);
+         
+        tooltip.append("text")
+            .attr("x", 22)
+            .attr("dy", "1.2em")
+            .style("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold");
+    });
+  </script>
+<br> </br>
+<hr> </hr>
+<br> </br>
+
+<div>
+<ul style="list-style-type:none">
+<li "style-type: none"><a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/pro2.html">Code</a></li>
+</ul>
+</div>
+<div class="container">
+<h4>Implementation Details</h4>
+
+  <p> This page shows switch between stacked and grouped layouts using sequenced transitions. Animations preserve object constancy and allow the user to follow the data across views. I am trying to visualise factors in population that makes it vulnerable to illnesses and early deaths. 
+  I have a radio button to change the funcationality and tooltp to point. I have changing yaxis scale for stacked bar chart and grouped chart.
+</div>
+</body>
+
+</html>
+</body>
