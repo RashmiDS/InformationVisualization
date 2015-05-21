@@ -97,7 +97,7 @@
 </article>
 <hr> </hr>
 <br><br>
-<h3 style="color:blue;margin-left:200px;">Health Status Indicator of all the counties in USA</h3>
+<h3 style="color:blue;margin-left:300px;">Health Status Indicator of all the counties in USA</h3>
   <div id = "map"></div>
   <br><br>
   <h4 style="color:blue;margin-left:570px;">Observations</h4>
@@ -206,11 +206,13 @@
             .tickSize(0)
             .tickPadding(6)
             .orient("bottom");
+        var formatPercent = d3.format(".0%");
 
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left")
-            .tickFormat(d3.format(".%"));
+            .tickFormat(function(d) { return d + "%"; });
+            // .tickFormat(d3.format(".%"));
             // .tickFormat("none")
             // .tickFormat(d3.format(".2s"))
 
@@ -379,9 +381,9 @@
         tooltip.append("rect")
             .attr("width", 44)
             .attr("height", 20)
-            .attr("fill", "grey")
-            .attr("stroke","black")
-            .style("opacity", 0.5);
+            .attr("fill", "#e9e9e9");
+            // .attr("stroke","black")
+            // .style("opacity", 0.5);
          
         tooltip.append("text")
             .attr("x", 22)
@@ -389,6 +391,7 @@
             .style("text-anchor", "middle")
             .attr("font-size", "12px")
             .attr("font-weight", "bold");
+
     });
 }
 p1()
@@ -436,9 +439,10 @@ p1()
 
     .tooltip2 {   
 
-    background-color: lightgrey;
-    background-opacity: 0.8;
-    color: black;
+    background-color: #e9e9e9;
+
+    /*background-opacity:0.5; */
+    /*font-color: blue;*/
 
               margin: 10px;
               height: 20px;
@@ -447,24 +451,35 @@ p1()
               padding-top: 2px;
               font-size: 12px;
               font-weight: bold;
+              stroke:black;
 
-              /*padding-bottom: 10px;*/
-        /*-webkit-border-radius:10px;*/
-        -moz-border-radius:10px;
+              padding-bottom: 10px;
+        /*-webkit-border-radius:10px;
+ /*/      -moz-border-radius:10px;*/
         border:black;
+}*/
+/* .style("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold");
+            .attr("fill", "grey")
+            .attr("stroke","black")
+            .style("opacity", 0.5);
+    });
+
+
         /*border-radius:10px;*/
-    }
 
 </style>
 <!-- <body> -->
 <script>
 function p2(){
 
-  var tooltip = d3.select("body")
+  var tooltip = d3.select("#paralelCoordinates")
     .append("div")
     .style("position", "absolute")
     .style("z-index", "10")
     .style("visibility", "hidden")
+    .style("stroke","black")
     .text("a simple tooltip")
     .attr("class","tooltip2");
 
@@ -507,6 +522,23 @@ function p2(){
         .enter().append("path")
           .attr("d", path);
 
+      // var tooltip = svg.append("g")
+      //       .attr("class", "tooltip2");
+            
+      //   tooltip.append("rect")
+      //       .attr("width", 44)
+      //       .attr("height", 20)
+      //       .attr("fill", "grey")
+      //       .attr("stroke","black")
+      //       .style("opacity", 0.5);
+         
+      //   tooltip.append("text")
+      //       .attr("x", 22)
+      //       .attr("dy", "1.2em")
+      //       .style("text-anchor", "middle")
+      //       .attr("font-size", "12px")
+      //       .attr("font-weight", "bold");
+
       // Add blue foreground lines for focus.
       foreground = svg.append("g")
           .attr("class", "foreground")
@@ -520,6 +552,7 @@ function p2(){
           .style({'stroke' : 'black'})
           .style({'stroke-width' : '2'});
       tooltip.text(n.statename);
+      tooltip.attr("fill","green");
       return tooltip.style("visibility", "visible");
         })
         .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
@@ -529,6 +562,8 @@ function p2(){
       .style({'stroke-width' : '1'});
       return tooltip.style("visibility", "hidden");
         });
+
+
 
       // Add a group element for each dimension.
       var g = svg.selectAll(".dimension")
@@ -656,7 +691,7 @@ p2()
      /*padding: 2px;*/
      font-size: 12px;
      font-weight: bold;
-     background: lightgrey;
+     background: #e9e9e9;
      opacity : 0.5;
      /*border: 1px;*/
      /*border-radius: 8px;*/
@@ -764,7 +799,7 @@ function p3(){
 
  p3()
 </script>
-<h4 style="color:blue;margin-left:570px;">Implementation Details</h4>
+<h4 style="color:blue;margin-left:470px;">Techniques and Interactivity Details</h4>
 <p style ="margin-left:60px;margin-right:60px;">For my final data visualisation project, I have visualized Community Health Status Indicator Data. I wanted to see how health of community is affected by its surroundings, demographics and man made external factors. I am able to find some interesting coorelations here. All the implementation is done using d3 library of JavaScript. For choropleth map, a topojason file is used.</p>
 <p style ="margin-left:60px;margin-right:60px;"> First chart has stacked bar chart and grouped bar chart which can be viewed interchangble. I have implemnted filtering and tooltip on these charts. Using radio buttons, one can see different views of the same data and compare in different ways. I have used pandas and postgres to do my data manipulations. Y-axis changes with charts. It represents percenatges. I have used four different tables for my visualisations. Pandas is used to push the csv files in postgres and postgres is used to join the tables. For the first bar chart, the tables had absolute number of people suffering from major depressiona and other problems. The number would be high for highly populated states if used as it is. I used population data for each county from another table, joined it with the problem table, grouped by states and then divided by population of that state. This gave me percentage of population suffering in each state. The tooltip represents what percent of population in a state that is suffering from depression and likewise other factors. It is not percentage of overall population of US.
   </p>
@@ -774,11 +809,31 @@ function p3(){
 
   <p style="margin-left:60px;margin-right:60px;">For topojason file, you need to have some common id in your data and topojason file. Fortunately, all the census data from US government has this field which made it very easy to get the data ready for visualization. Very little data manipulation was required for this chart. I am able to show tooltips with a name of county, state and actual value of the indicator.I am implementing this chart at county level because it is important to understand that we should not generalise based on high level analysis. Every detail is important. There are many levels within a same state. For a big country like US, there is a lot of diversity that should be taken into account. Kentucky has the highest percentage of troubled population but at the same time it has a county that is exceptionally high on health status indicator.</p>
 
+<br><br>
+
+<h4 style="color:blue;margin-left:570px;">Feedback</h4>
+ <p style="margin-left:60px;margin-right:60px;"> Prototype feeback session was very useful. It gave me lots of new ideas and also made me aware of all the mistakes my visualisation was making. I incorporated almost all of the suggestions from feedback session in my final project.</p>
+ <p style="margin-left:60px;margin-right:60px;">
+I realised how important and difficult it is to portray right information.
+I learnt a lot from this course. Apart from using d3 and JavaScript, it learnt how to control data-ink ratio and lie-factor. I realised the power of visualisation in analytics. It is so much easier to point out abnormalities and  outliers from a chart than from numbers. Huge amount of information can be placed in a small chart which makes it very convinient for people dealing with the business side of a company.
+  </p>
+
+<br></br>
+<h4 style="color:blue;margin-left:570px;">Challenges</h4>
+ <p style="margin-left:60px;margin-right:60px;"> Some of the challenges that I encountered in this project were related to map from topojason file. I had to understand how to extract information from topojason file and connect it with my data. After lot of trying and reading, I was able to figure out the right way after which things were pretty smooth. Also, earlier for my homework1, I had received feedback that my bars were growing very slow. I had to spend some time getting the perfect speed for transition in my stacked-group chart. I showed my chart to few people and took their feedback. Hopefully the conclusion from this sample will apply to the general population's view on transition speed.</p>
+
+<h4 style="color:blue;margin-left:570px;">Conclusion</h4>
+<p style="margin-left:60px;margin-right:60px;">
+  From this visualisation, I can say that a large percentage of people in Kentucy and West Virginia are suffereing from some kind of abuse. Government should look into the factors that are causing it. I would say large dropout percentage is one of the important factors causing this. May be government can come up with schemes to retain students in schools. I can also say that lung cancers and strokes are coorelated. Richer population is more prone to these ailments. And people on coast are healthier than people in mid-west. I can look into the reason for this. I am sure this data will have some story to display. 
+  </p>
+ <p style="margin-left:60px;margin-right:60px;">
+Overall, my experience with this project has been very enriching. I understood the functionality each function of d3 and I am happy with my learning. Now I am able to distinguish bad visualisation from a good one. I can even suggest some useful insights to make the visualisation more informatic. </p>
+
 <hr>
 <a style="margin-left:60px;" href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/FinalProject.html">Code</a>
 </hr>
-<h3 style="margin-left:60px;">Inspiration</h3>
-<ul>
+<h3 style="margin-left:60px;">Special Mentions</h3>
+<ul>        <li>I would like to thank Sophie Engle for her help throughout the course. Her understanding of subject is very impressive. Also, her punctuality and disciplined approach towards each class gave this course a very professional touch. I appreciate her timely feedback and patience in taking time to help us deal with d3 code.</li> 
             <li>Mike Bostock's <a href = "http://bl.ocks.org/mbostock/3943967">example</a></li>
             <li>Jason Davie's <a href = "http://bl.ocks.org/jasondavies/1341281">example</a></li>
             <li>Mike Bostock's <a href ="http://bl.ocks.org/mbostock/4060606">example</a>
