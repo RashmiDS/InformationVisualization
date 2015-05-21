@@ -772,10 +772,19 @@ function p3(){
   <p style="margin-left:60px;margin-right:60px;">For parallel coordinates also, I had to group by states and join tables to have poverty/population. Poverty/population indicates number of poor people per 1000 in a population. I have implemented brushing, changing axes, color coorinated strokes according to regions and highlight and tooltip on mouse hover in this chart. I again used pandas and postgres for data manipulations. In the end, data was exported to csv format so that it can be used easily in d3.
   </p>
 
-  <p style="margin-left:60px;margin-right:60px;">For topojason file, you need to have some common id in your data and topojason file. Fortunately, all the census data from US government has this field which made it very easy to get the data ready for visualization. Very little data manipulation was required for this chart. I am able to show tooltips with a name of county, state and actual value of the indicator.I am implementing this chart at county level because it is important to understand that we should not generalise based on high level analysis. Every detail is important. There are many levels within a same state. For a big country like US, there is a lot of diversity that should be taken into account. Kentucky has the highest percentage of troubled population but at the same time it has a county that is exceptionally high on health sattus indicator.</p>
+  <p style="margin-left:60px;margin-right:60px;">For topojason file, you need to have some common id in your data and topojason file. Fortunately, all the census data from US government has this field which made it very easy to get the data ready for visualization. Very little data manipulation was required for this chart. I am able to show tooltips with a name of county, state and actual value of the indicator.I am implementing this chart at county level because it is important to understand that we should not generalise based on high level analysis. Every detail is important. There are many levels within a same state. For a big country like US, there is a lot of diversity that should be taken into account. Kentucky has the highest percentage of troubled population but at the same time it has a county that is exceptionally high on health status indicator.</p>
 
-<hr></hr>
-<a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/FinalProject.html">Code</a>
-<hr><hr>
+<hr>
+<a style="margin-left:60px;" href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/FinalProject.html">Code</a>
+</hr>
+<h3 style="margin-left:60px;">Inspiration</h3>
+<ul>
+            <li>Mike Bostock's <a href = "http://bl.ocks.org/mbostock/3943967">example</a></li>
+            <li>Jason Davie's <a href = "http://bl.ocks.org/jasondavies/1341281">example</a></li>
+            <li>Mike Bostock's <a href ="http://bl.ocks.org/mbostock/4060606">example</a>
+</li>
+</ul>
+
+
 
 
