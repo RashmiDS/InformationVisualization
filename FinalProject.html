@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MSAN 622 Information Visualization</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+<style type="text/css">
+    body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font: 14px sans-serif;
+    }
+    .myheader {
+        font-size: 30px;
+    }
+
+    p.padding {
+    padding: 25px 50px;
+    }
+    article {
+    -webkit-column-count:2;
+    -moz-column-count:2;
+    column-count:2;
+    padding: 10px 120px;
+
+}
+
+
+</style>
+</head>
+
+<body> 
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MSAN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="http://rashmids.github.io/InformationVisualization/">Home</a></li>
+                <li><a href="/InformationVisualization/#project">Project</a></li>
+                <!-- <li><a href="/InformationVisualization/#participation">Participation</a></li> -->
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/InformationVisualization/#about">About</a></li>
+                <li><a href="/InformationVisualization/#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h2 style="text-align: center">Visualisation Project</h2>
+        <h4 style = "text-align: center"> Rashmi Malani<h4>
+    </div>
+</div>  
+
+  <!-- Import d3 -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
+<script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+
+<!-- Stacked Bar CHART -->
+<body>
+  <h3 style="color:blue;margin-left:330px;">Characteristics per unit population of all US States</h3>
+  <div id = "stackedgroupedbar"></div>
+<br> </br>
+<h4 style="color:blue;margin-left:570px;">Observations</h4>
+<article>
+    This chart displays individual percentage of population of each state affected with Drug Use, Major Depression, Disabled to work, Unemployed and No High School Diploma. There are radio buttons to view the data in the form of stacked bar chart or grouped bar chart. Since the data displayed is in percentages of population of each state, we don't have to worry about things like states with larger population will have more number of people suffering from these conditions. We can see that Kentucky and West Virginia has the highest percentage of drop outs. Looking at the length of stacked bar graph of these two states, we can say that the largest portion of population in these two states is most disturbed. Florida has exceptionally high percentage of retired population. Using these charts, we can look at the highest/lowest rank of states on individual parameters and also their overall troubled population. 
+</article>
+<hr> </hr>
+<br><br>
+<h3 style="color:blue;margin-left:200px;">Relation between toxic chemicals in air with lung cancers and strokes</h3>
+<br><br>
+  <div id = "paralelCoordinates"></div>
+<br> </br>
+<h4 style="color:blue;margin-left:570px;">Observations</h4>
+<article>
+    This is a parallel coordinates chart. It is most useful in seeing the co-relations between various categories. My hypotheses is that when the percentage of toxic chemicals is high in air, there are more number of lung cancers and strokes. Logic being people going in bad air will have lung cancer and people staying in because of the fear of bad air will stay inside(no exercise) leading to heart troubles. I am also trying to see any relation between poverty and toxic chemicals. We can see that lung cancers and strokes are pretty much correlated. But there does not appear to be any relation between lung cancers, strokes and toxic chemicals. When we shift the axis and bring poverty/population closer to strokes and lung cancers, we see that there is relation between poverty and lung cancer and strokes. These numbers are high where poverty is less. This indicates that the poor population does not have to worry a lot about heart diseases and lung cancers. This may be because poorer population has to do more manual labour as compared to rich people.
+</article>
+<hr> </hr>
+<br><br>
+<h3 style="color:blue;margin-left:200px;">Health Status Indicator of all the counties in USA</h3>
+  <div id = "map"></div>
+  <br><br>
+  <h4 style="color:blue;margin-left:570px;">Observations</h4>
+<article>
+    This is a choropleth map of United States of America with counties of Hawaii and Alaska included. I am trying to visualise health status indicator of each county. Health status indicator is a combination of personal, social, economic, and environmental factors that influence health status. There is no data for four counties, so I just left it as it is. Putting some random data would increase the lie factor. So, the range of depth of color is directly proportional to health status indicator. We can see that the overall shade of mid-western states is lighter compared to that on coasts. Interesting fact is that the highest value of health staus is 47.7 for McCreary in Kentucky. There can be huge differences in behavios amongst the counties of same state. 
+</article>
+<br><br>
+</body>
+
+
+
+<!-- <h1 class="Stacked Bar Chart">Stacked-to-Grouped Bar Chart</h1> -->
+<!-- <p id="stackedgroupedbar"></p> -->
+
+<style>
+
+    svg {
+      font: 10px sans-serif;
+    }
+    .x.axis1 path,
+    .x.axis1 line {
+      fill: white;
+      stroke: #000;
+      shape-rendering: crispEdges;
+      /*display: none;*/
+    }
+
+    .y.axis1 path,
+    .y.axis1 line {
+      fill: white;
+      stroke: #000;
+      shape-rendering: crispEdges;
+      /*display: none;*/
+
+    } 
+
+    .radio-toolbar label {
+        display:inline-block;
+        padding:4px 11px;
+        font-family:sans-serif;
+        font-size:14px;
+    }
+
+    form {
+      position: absolute;
+      right: 600px;
+      top: 270px;
+    }
+  </style>
+
+  
+  <form>
+    <div class="radio-toolbar">  
+  <label><input type="radio" name="mode" value="grouped"> Grouped</label>
+  <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
+    </div>
+</form>
+
+  <script>
+    function p1(){
+
+    var n = 5, // number of layers
+        m = 50; // number of samples per layer
+
+    var margin = {top: 30, right: 120, bottom: 50, left: 75},
+        width = 1100 - margin.left - margin.right,
+        height = 510 - margin.top - margin.bottom;
+
+
+    var svg = d3.select("#stackedgroupedbar").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.csv("VulPopNew1.csv", function (data){
+        
+    var headers = ["NohighSchoolDip","Umemployed","DisabledToWork","MajorDepression","RecentDrugUse"];
+        // var headers = ["NoHighSchoolDiploma","Unemployed","DisabledToWork","MajorDepression","RecentDrugUse"];
+        
+        var layers = d3.layout.stack()(headers.map(function(priceRange) {
+            return data.map(function(d) {
+              return {x: d.statename, y: +d[priceRange]};
+            });
+        }));
+
+        console.log(data)
+        
+        var yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); });
+        var yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+
+        var xScale = d3.scale.ordinal()
+            .domain(layers[0].map(function(d) { return d.x; }))
+            .rangeRoundBands([25, width], .08);
+
+        var y = d3.scale.linear()
+            .domain([0, yStackMax])
+            .range([height, 0]);
+
+        var color = d3.scale.ordinal()
+            .domain(headers)
+            .range(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854"]);
+
+        var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .tickSize(0)
+            .tickPadding(6)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".%"));
+            // .tickFormat("none")
+            // .tickFormat(d3.format(".2s"))
+
+        var layer = svg.selectAll(".layer")
+            .data(layers)
+            .enter().append("g")
+            .attr("class", "layer")
+            .style("fill", function(d, i) { return color(i); });
+
+        var rect = layer.selectAll("rect")
+            .data(function(d) { return d; })
+            .enter().append("rect")
+            .attr("x", function(d) { return xScale(d.x); })
+            .attr("y", height)
+            .attr("width", xScale.rangeBand())
+            .attr("height", 0);
+
+        rect.transition()
+            .delay(function(d, i) { return i * 10; })
+            .attr("y", function(d) { return y(d.y0 + d.y); })
+            .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+
+        //********** AXES ************
+        svg.append("g")
+            .attr("class", "x axis1")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text").style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", function(d) {
+                      return "rotate(-90)" 
+                    });
+
+          svg.append("text")
+          .attr("class", "x label1")
+          .style("text-anchor", "middle")
+          .style("font-size",14)
+          .style("font-family","sans-serif")
+          .attr("x", 525)
+          .attr("y", 480)
+          .text("States");
+        
+        svg.append("g")
+            .attr("class", "y axis1")
+            .attr("transform", "translate(20,0)")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr({"x": -150, "y": -70})
+            .attr("dy", ".75em")
+            .style("text-anchor", "end")
+            .style("font-size",14)
+            .style("font-family","sans-serif")
+            .text("Percentage");
+
+        var legend = svg.selectAll(".legend")
+            .data(headers.slice().reverse())
+                .enter().append("g")
+                .attr("class", "legend1")
+                .attr("transform", function(d, i) { return "translate(-20," + i * 20 + ")"; });
+           
+            legend.append("rect")
+                .attr("x", width + 90)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", color);
+        
+            legend.append("text")
+                  .attr("x", width + 80)
+                  .attr("y", 9)
+                  .attr("dy", ".35em")
+                  .style("text-anchor", "end")
+                  .text(function(d) { return d; });
+
+
+        d3.selectAll("input").on("change", change);
+
+        var timeout = setTimeout(function() {
+          d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
+        }, 2000);
+
+        function change() {
+          clearTimeout(timeout);
+          if (this.value === "grouped") transitionGrouped();
+          else transitionStacked();
+        }
+
+        function transitionGrouped() {
+          y.domain([0, yGroupMax]);
+
+          rect.transition()
+              .duration(500)
+              .delay(function(d, i) { return i * 30; })
+              .attr("x", function(d, i, j) { return xScale(d.x) + xScale.rangeBand() / n * j; })
+              .attr("width", xScale.rangeBand() / n)
+            .transition()
+              .attr("y", function(d) { return y(d.y); })
+              .attr("height", function(d) { return height - y(d.y); });
+
+          rect.on("mouseover", function() { tooltip.style("display", null); })
+            .on("mouseout", function() { tooltip.style("display", "none"); })
+            .on("mousemove", function(d) {
+              var xPosition = d3.mouse(this)[0] - 15;
+              var yPosition = d3.mouse(this)[1] - 25;
+              tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+              tooltip.select("text").text(d.y+"%");
+            });
+            svg.select("g.y")
+                .remove();
+            svg.append("g")
+            .attr("class", "y axis1")
+            .attr("transform", "translate(20,0)")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr({"x": -150, "y": -70})
+            .attr("dy", ".75em")
+            .style("text-anchor", "end")
+            .style("font-size",14)
+            .style("font-family","sans-serif")
+            .text("Percentage");
+        };
+
+        function transitionStacked() {
+          y.domain([0, yStackMax]);
+
+          rect.transition()
+              .duration(500)
+              .delay(function(d, i) { return i * 30; })
+              .attr("y", function(d) { return y(d.y0 + d.y); })
+              .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+            .transition()
+              .attr("x", function(d) { return xScale(d.x); })
+              .attr("width", xScale.rangeBand());
+
+          rect.on("mouseover", function() { tooltip.style("display", null); })
+            .on("mouseout", function() { tooltip.style("display", "none"); })
+            .on("mousemove", function(d) {
+              var xPosition = d3.mouse(this)[0] - 15;
+              var yPosition = d3.mouse(this)[1] - 25;
+              tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+              tooltip.select("text").text(d.y+"%");
+            });
+
+            svg.select("g.y")
+                .remove();
+
+            svg.append("g")
+            .attr("class", "y axis1")
+            .attr("transform", "translate(20,0)")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr({"x": -150, "y": -70})
+            .attr("dy", ".75em")
+            .style("text-anchor", "end")
+            .style("font-size",14)
+            .style("font-family","sans-serif")
+            .text("Percentage");
+        };
+
+        var tooltip = svg.append("g")
+            .attr("class", "tooltip_sb");
+            
+        tooltip.append("rect")
+            .attr("width", 44)
+            .attr("height", 20)
+            .attr("fill", "grey")
+            .attr("stroke","black")
+            .style("opacity", 0.5);
+         
+        tooltip.append("text")
+            .attr("x", 22)
+            .attr("dy", "1.2em")
+            .style("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold");
+    });
+}
+p1()
+
+  </script>
+
+
+<!-- 
+ -->
+<style>
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ccc;
+      stroke-opacity: .4;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+      stroke-opacity: .7;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff;
+      cursor: move;
+    }
+
+    .tooltip2 {   
+
+    background-color: lightgrey;
+    background-opacity: 0.8;
+    color: black;
+
+              margin: 10px;
+              height: 20px;
+              padding-right: 10px;
+              padding-left: 10px; 
+              padding-top: 2px;
+              font-size: 12px;
+              font-weight: bold;
+
+              /*padding-bottom: 10px;*/
+        /*-webkit-border-radius:10px;*/
+        -moz-border-radius:10px;
+        border:black;
+        /*border-radius:10px;*/
+    }
+
+</style>
+<!-- <body> -->
+<script>
+function p2(){
+
+  var tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .text("a simple tooltip")
+    .attr("class","tooltip2");
+
+    var m = [30, 20, 50, 1],
+        w = 1110 - m[1] - m[3],
+        h = 510- m[0] - m[2];
+
+    var x = d3.scale.ordinal().rangePoints([0, w], 1),
+        y = {},
+        dragging = {};
+
+    var line = d3.svg.line(),
+        axis = d3.svg.axis().orient("left"),
+        background,
+        foreground;
+
+    var svg = d3.select("#paralelCoordinates").append("svg")
+        .attr("width", w + m[1] + m[3])
+        .attr("height", h + m[0] + m[2])
+      .append("g")
+        .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+    var colorScale3 = d3.scale.category10();
+
+
+    d3.csv("PC2.csv", function(error, piers) {
+
+      // Extract the list of dimensions and create a scale for each.
+      x.domain(dimensions = d3.keys(piers[0]).filter(function(d) {
+        return d != "statename" && d != "state.region" && d != "poverty" && (y[d] = d3.scale.linear()
+            .domain(d3.extent(piers, function(p) { return +p[d]; }))
+            .range([h, 0]));
+      }));
+
+      // Add grey background lines for context.
+      background = svg.append("g")
+          .attr("class", "background")
+        .selectAll("path")
+          .data(piers)
+        .enter().append("path")
+          .attr("d", path);
+
+      // Add blue foreground lines for focus.
+      foreground = svg.append("g")
+          .attr("class", "foreground")
+        .selectAll("path")
+          .data(piers)
+        .enter().append("path")
+          .attr("d", path)
+          .style("stroke", function(d) {return colorScale3(color3(d))})
+        .on("mouseover", function(n){
+      d3.select(this).transition().duration(100)
+          .style({'stroke' : 'black'})
+          .style({'stroke-width' : '2'});
+      tooltip.text(n.statename);
+      return tooltip.style("visibility", "visible");
+        })
+        .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+        .on("mouseout", function(d){
+      d3.select(this).transition().duration(100)
+      .style("stroke", function(d) {return colorScale3(color3(d))})
+      .style({'stroke-width' : '1'});
+      return tooltip.style("visibility", "hidden");
+        });
+
+      // Add a group element for each dimension.
+      var g = svg.selectAll(".dimension")
+          .data(dimensions)
+        .enter().append("g")
+          .attr("class", "dimension")
+          .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+          .call(d3.behavior.drag()
+            .on("dragstart", function(d) {
+              dragging[d] = this.__origin__ = x(d);
+              background.attr("visibility", "hidden");
+            })
+            .on("drag", function(d) {
+              dragging[d] = Math.min(w, Math.max(0, this.__origin__ += d3.event.dx));
+              foreground.attr("d", path);
+              dimensions.sort(function(a, b) { return position(a) - position(b); });
+              x.domain(dimensions);
+              g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
+            })
+            .on("dragend", function(d) {
+              delete this.__origin__;
+              delete dragging[d];
+              transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
+              transition(foreground)
+                  .attr("d", path);
+              background
+                  .attr("d", path)
+                  .transition()
+                  .delay(500)
+                  .duration(0)
+                  .attr("visibility", null);
+            }));
+
+      // Add an axis and title.
+      g.append("g")
+          .attr("class", "axis")
+          .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+        .append("text")
+          .attr("text-anchor", "middle")
+          .attr("y", -9)
+          .text(String);
+
+      // Add and store a brush for each axis.
+      g.append("g")
+          .attr("class", "brush")
+          .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brushstart", brushstart).on("brush", brush)); })
+        .selectAll("rect")
+          .attr("x", -8)
+          .attr("width", 16);
+    });
+
+    function position(d) {
+      var v = dragging[d];
+      return v == null ? x(d) : v;
+    }
+
+    function transition(g) {
+      return g.transition().duration(500);
+    }
+
+    // Returns the path for a given data point.
+    function path(d) {
+      return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
+    }
+
+    // When brushing, don’t trigger axis dragging.
+    function brushstart() {
+      d3.event.sourceEvent.stopPropagation();
+    }
+
+     function color3(d) {
+                return d["state.region"];
+              }
+
+    // Handles a brush event, toggling the display of foreground lines.
+    function brush() {
+      var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
+          extents = actives.map(function(p) { return y[p].brush.extent(); });
+      foreground.style("display", function(d) {
+        return actives.every(function(p, i) {
+          return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+        }) ? null : "none";
+      });
+    }
+
+}
+p2()
+</script>
+
+
+
+<style>
+ 
+    path {
+     stroke:white;
+     stroke-width: 1px;
+    }
+     
+    body {
+     font-family: Arial, sans-serif;
+    }
+     
+    .city {
+     font: 10px sans-serif;
+     font-weight: bold;
+    }
+     
+    .legend {
+     font-size: 12px;
+    }
+
+    .county-border,
+    .state-border {
+      fill: none;
+      stroke: #fff;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+     
+    div.tooltip3 {
+     position: absolute;
+     text-align: center;
+     width: 90px;
+     height: 30px;
+     /*padding: 2px;*/
+     font-size: 12px;
+     font-weight: bold;
+     background: lightgrey;
+     opacity : 0.5;
+     /*border: 1px;*/
+     /*border-radius: 8px;*/
+     pointer-events: none;
+    }
+</style>
+
+ <script>
+
+function p3(){
+
+     var width = 1110,
+     height = 510;
+     scale0 = (width - 1) / 2 / Math.PI;
+     // var color_domain = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000]
+     var color_domain = [2.1, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44]
+     // var ext_color_domain = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000]
+     var ext_color_domain = [0, 2.1, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44]
+     var legend_labels = ["< 2.0", "2.0+", "4.0+", "8.0+", "12.0+", "16.0+", "20.0+", "24.0+", "28.0+", "32.0+", "36.0+", "40.0+", "44.0+"]
+     var color = d3.scale.threshold()
+     .domain(color_domain)
+     .range(["#dcdcdc", "#d0d6cd", "#bdc9be", "#aabdaf", "#97b0a0", "#84a491", "#719782", "#5e8b73", "#4b7e64", "#387255", "#256546", "#125937", "#004d28"]);
+
+        var svg = d3.select("#map").append("svg")
+         .attr("width", width)
+         .attr("height", height)
+         .style("margin", "10px auto");
+         var path = d3.geo.path()
+         
+        var div = d3.select("#map").append("div")
+         .attr("class", "tooltip3")
+         .style("opacity", 0.9)
+         .attr("stroke","black");
+
+         
+        queue()
+         .defer(d3.json, "us.json")
+         .defer(d3.csv, "hsi2.csv")
+         .await(ready);
+         
+        function ready(error, us, data) {
+         var pairRateWithId = {};
+         var pairNameWithId = {};
+         var pairStateWithId = {}
+         
+         console.log(data)
+
+        data.forEach(function(d) {
+           pairRateWithId[d.id] = +d.rate;
+           pairNameWithId[d.id] = d.name;
+           pairStateWithId[d.id] = d.State;
+           });
+
+         svg.append("g")
+         .attr("class", "county")
+         .selectAll("path")
+         .data(topojson.feature(us, us.objects.counties).features)
+         .enter().append("path")
+         .attr("d", path)
+         .style ( "fill" , function (d) {
+         return color (pairRateWithId[d.id]);
+         })
+         .style("opacity", 0.8)
+         .on("mouseover", function(d) {
+             d3.select(this).transition().duration(300).style("opacity", 1);
+             div.transition().duration(300)
+             .style("opacity", 1)
+             .style("fill","red")
+             div.text(pairNameWithId[d.id]+","+ pairStateWithId[d.id]+ " " + pairRateWithId[d.id])
+             .style("left", (d3.event.pageX) + "px")
+             .style("top", (d3.event.pageY -30) + "px");
+             })
+         .on("mouseout", function() {
+         d3.select(this)
+         .transition().duration(300)
+         .style("opacity", 0.8);
+         div.transition().duration(300)
+         .style("opacity", 0);
+         });
+
+         };
+
+
+        var legend = svg.selectAll("g.legend")
+         .data(ext_color_domain)
+         .enter().append("g")
+         .attr("class", "legend");
+         
+        var ls_w = 20, ls_h = 20;
+         
+        legend.append("rect")
+         .attr("x",  900)
+         .attr("y", function(d, i){ return height - (i*ls_h) - 2*ls_h;})
+         .attr("width", ls_w)
+         .attr("height", ls_h)
+         .style("fill", function(d, i) { return color(d); })
+         .style("opacity", 0.8);
+         
+        legend.append("text")
+         .attr("x", 850)
+         .attr("y", function(d, i){ return height - (i*ls_h) - ls_h - 4;})
+         .text(function(d, i){ return legend_labels[i]; });
+         
+ }
+
+ p3()
+</script>
+<h4 style="color:blue;margin-left:570px;">Implementation Details</h4>
+<p style ="margin-left:60px;margin-right:60px;">For my final data visualisation project, I have visualized Community Health Status Indicator Data. I wanted to see how health of community is affected by its surroundings, demographics and man made external factors. I am able to find some intersting coorelations here. All the implementation is done using d3 library of JavaScript. For choropleth map, a topojason file is used.</p>
+<p style ="margin-left:60px;margin-right:60px;"> These are stacked bar chart and grouped bar chart which can be viewed interchangble. I have implemnted filtering and tooltip on these charts. Using radio buttons, one can see different views of the same data and compare in different ways. I have used pandas and postgres to do my data manipulations. Y-axis changes with charts. It represents percenatges. I have used four different tables for my visualisations. Pandas is used to push the csv files in postgres and postgres is used to join the tables. For the first bar chart, the tables had absolute number of people suffering from major depressiona and other problems. The number would be high for highly populated states if used as it is. I used population data for each county from another table, joined it with the problem table, grouped by states and then divided by population. This gave me percentage of population suffereing in each state. The tooltip represents what percent of population in a state that is suffering from depression and likewise other factors. It is not percentage of overall population of US.
+  </p>
+
+  <p style="margin-left:60px;margin-right:60px;">For parallel coordinates also, I had to group by states and join tables to have poverty/population. Poverty/population indicates number of poor people per 1000 in a population. I have implemented brushing, changing axes, color coorinated strokes according to regions and highlight and tooltip on mouse hover in this chart. I again used pandas and postgres for data manipulations. In the end, data was exported to csv format so that it can be used easily in d3.
+  </p>
+
+  <p style="margin-left:60px;margin-right:60px;">For topojason file, you need to have some common id in your data and topojason file. Fortunately, all the census data from US government has this field which made it very easy to get the data ready for visualization. Very little data manipulation was required for this chart. I am able to show tooltips with a name of county, state and actual value of the indicator.I am implementing this chart at county level because it is important to understand that we should not generalise based on high level analysis. Every detail is important. There are many levels within a same state. For a big country like US, there is a lot of diversity that should be taken into account. Kentucky has the highest percentage of troubled population but at the same time it has a county that is exceptionally high on health sattus indicator.</p>
+
+<hr></hr>
+<a href="https://raw.githubusercontent.com/RashmiDS/InformationVisualization/gh-pages/FinalProject.html">Code</a>
+<hr><hr>
+
+
